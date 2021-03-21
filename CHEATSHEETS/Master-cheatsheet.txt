@@ -1,0 +1,249 @@
+####### logins #####
+
+Popeye@2020#
+
+------local-------
+
+linuxdan : Popeye44
+
+prometheusadmin	Popeye@44
+
+
+------Azure------
+
+Linuxdan : popeye@2020#
+
+Promadmin :	Popeye@2021
+
+
+####### scripts #########
+
+dir ~
+mkdir scripts
+Touch ./scripts/installnodeexporter.sh
+sudo nano ./scripts/installnodeexporter.sh
+sudo chmod +x ./scripts/installnodeexporter.sh
+
+
+sudo sh ./scripts/installnodeexporter.sh
+
+##############  Firewall ##############
+
+sudo ufw status
+
+sudo ufw app list
+sudo ufw app info Name
+sudo ufw allow Name
+
+sudo ufw allow ssh
+sudo ufw allow xxxx  
+
+sudo ufw enable
+
+sudo ufw allow 6000:6007/tcp
+sudo ufw allow 6000:6007/udp
+
+sudo ufw allow from 203.0.113.4
+sudo ufw allow from 203.0.113.4 to any port 22
+sudo ufw allow from 203.0.113.0/24
+
+sudo ufw status numbered
+sudo ufw delete 2
+
+sudo ufw delete allow http
+sudo ufw delete allow 80
+
+sudo ufw disable
+sudo ufw reset
+
+######### code location ########
+
+cd /usr/local/bin/
+
+####### PORTS ##########
+
+prometheus 9090
+
+node explorer 9100
+
+alertmanager 9093
+
+##### Prometheus rules ##########
+
+/etc/prometheus/first.rules.yml
+/etc/prometheus/second.rules.yml
+
+sudo nano /etc/prometheus/first.rules.yml
+
+##### Check rules ##############
+
+sudo /usr/local/bin/promtool check rules first.rules.yml
+
+Checking first.rules.yml
+  SUCCESS: 4 rules found
+
+
+sudo systemctl restart prometheus
+sudo systemctl status prometheus
+
+
+
+
+
+#####Prometheus config #################
+sudo nano /lib/systemd/system/prometheus.service
+
+
+sudo nano /etc/prometheus/prometheus.yml
+
+
+sudo systemctl restart prometheus
+sudo systemctl status prometheus
+
+sudo journalctl --unit=prometheus.service
+sudo journalctl -o verbose --unit=prometheus.service
+
+########## Alertmanager #############
+sudo nano /lib/systemd/system/alertmanager.service
+
+
+sudo nano /etc/alertmanager/alertmanager.yml
+
+##### Check alertmanager config ##############
+sudo /usr/local/bin/amtool check-config /etc/alertmanager/alertmanager.yml
+
+
+sudo systemctl restart alertmanager
+sudo systemctl status alertmanager
+
+sudo journalctl --unit=alertmanager.service
+sudo journalctl -o verbose --unit=alertmanager.service
+
+
+##### Node-exporter ######
+
+sudo systemctl stop node-exporter
+sudo systemctl start node-exporter
+sudo systemctl status node-exporter
+
+
+
+##### linux #####
+
+####check internet access####
+
+nslookup google.com1
+
+host www.google.com 
+
+cat < /dev/null > /dev/tcp/8.8.8.8/53; echo $?
+
+curl -Is  http://www.google.com | head -n 1
+
+
+telnet 8.8.8.8 53
+
+nc -vz google.com 443
+nc -vz 10.10.10.87 25
+nc -vz 10.10.10.87 587
+nc -vz smtp.office365.com 587
+
+wget -q --spider http://google.com ; echo $?
+
+
+############## NETWORKING #################
+
+Tracepath
+
+Netstat
+
+----- get network info 
+
+ip a
+
+sudo lshw -class network
+
+ip l show
+
+ip a show eth0
+
+route -n
+
+ip r | grep default
+ip l show | grep -A1 eth0
+ip l show | egrep -A1 'eth0|lo'
+
+sudo ifconfig
+
+##### change ip config #####
+
+cd /etc/netplan/
+
+sudo nano 00-installer-config.yaml
+
+network:
+
+  version: 2
+
+  renderer: networkd
+
+  ethernets:
+
+          ens160:
+
+                  dhcp4: no
+
+                  addresses: [10.10.10.161/24]
+
+                  gateway4: 10.10.10.1
+
+                  nameservers:
+
+                          addresses: [10.10.10.170,10.10.10.95]
+
+
+sudo netplan apply
+
+
+###### DNS #############
+
+/etc/resolv.conf
+
+do not edit as symlink
+
+systemd-resolve --status
+
+
+----local resolution -----
+
+/etc/hosts
+
+--------resolution order--------
+
+
+/etc/nsswitch.conf
+
+
+
+############# SMTP ################
+
+telnet 10.10.10.87 25
+
+
+ehlo dtek.com
+mail from:danny@dtek.com
+rcpt to:daniel.hobbs1709@outlook.com
+data
+subject: testmessage
+
+this is a test message
+
+.
+quit
+
+
+
+550 5.7.54 SMTP; Unable to relay recipient in non-accepted domain
+
+
+Set-ReceiveConnector "Application-relay" -PermissionGroups AnonymousUsers
