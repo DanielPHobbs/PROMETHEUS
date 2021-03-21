@@ -26,6 +26,7 @@ groups:
       summary: Host out of disk space (instance {{ $labels.instance }})
       description: Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS:{{ $labels }}
   - alert: HostHighCpuLoad
+
     expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
     for: 0m
     labels:
@@ -33,3 +34,11 @@ groups:
     annotations:
       summary: Host high CPU load (instance {{ $labels.instance }})
       description: CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS:{{ $labels }}
+  - alert: HostUnusualDiskReadLatency
+    expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host unusual disk read latency (instance {{ $labels.instance }})
+      description: Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS:{{ $labels }}      
