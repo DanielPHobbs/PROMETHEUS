@@ -17,3 +17,11 @@ groups:
         annotations:
           summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
           description: Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  LABELS:{{ $labels }}
+      - alert: PrometheusRuleEvaluationFailures
+        expr: increase(prometheus_rule_evaluation_failures_total[3m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus rule evaluation failures (instance {{ $labels.instance }})
+          description: Prometheus encountered {{ $value }} rule evaluation failures, leading to potentially ignored alerts.\n  VALUE = {{ $value }}\n  LABELS:{{ $labels }}
